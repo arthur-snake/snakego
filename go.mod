@@ -1,4 +1,4 @@
-module github.com/petuhovskiy/go-template
+module github.com/arthur-snake/snakego
 
 go 1.16
 

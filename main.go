@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/petuhovskiy/go-template/pkg/conf"
+	"github.com/arthur-snake/snakego/pkg/conf"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
