@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/arthur-snake/snakego/pkg/game"
+	"github.com/arthur-snake/snakego/pkg/ws"
 	"net/http"
 
 	"github.com/arthur-snake/snakego/pkg/conf"
@@ -28,5 +30,12 @@ func main() {
 		}
 	}()
 
-	select {}
+	server := game.NewServer()
+
+	h := ws.NewHandler(server)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", h.Handle)
+
+	log.WithField("bind", cfg.ServerBind).Info("starting server")
+	http.ListenAndServe(cfg.ServerBind, mux)
 }

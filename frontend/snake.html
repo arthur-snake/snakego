@@ -1,0 +1,148 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="Snake game. Control snake with arrows, eat food and grow"/>
+    <meta name="keywords" content="html5, snake"/>
+    <meta name="robots" content="index, follow"/>
+    <meta name="viewport"
+          content="minimal-ui, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery.mobile.custom.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="servers.js"></script>
+    <script src="js/emitter.js"></script>
+    <script src="snake/snake.js"></script>
+
+    <title>Snake 3.0</title>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #canvas {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #top-list {
+            z-index: 0;
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            background: rgba(31, 31, 31, 0.33);
+            opacity: 0.5;
+            padding: 17px;
+        }
+
+        #bottom-chat {
+            z-index: 0;
+            position: absolute;
+            left: 30px;
+            bottom: 30px;
+            opacity: 0.5;
+            padding: 17px;
+        }
+
+        .chat-msg {
+            font-size: 20px;
+            color: black;
+            margin-bottom: 0;
+        }
+
+        .top-element {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 0;
+        }
+
+        .color-preview {
+            width: 23px;
+            height: 23px;
+            display: inline-block;
+            border-radius: 100%;
+            margin-right: 8px;
+        }
+    </style>
+
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:700' rel='stylesheet' type='text/css'/>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+
+</head>
+<body>
+<div id="overlays"
+     style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2;">
+    <div id="helloDialog"
+         style="width: 350px; background-color: #FFFFFF; margin: 100px auto; border-radius: 15px; padding: 5px 15px 5px 15px;">
+        <form role="form" onsubmit="return false;">
+            <div class="form-group">
+                <h2 style="text-align: center">Hello</h2>
+            </div>
+
+            <div class="form-group">
+                <p>Type your nick or leave it empty:</p>
+                <select class="form-control" id="droplist" title=""></select>
+                <br/>
+                <input id="nick" class="form-control" placeholder="Nick" maxlength="14"/>
+            </div>
+
+
+            <div class="form-group">
+                <input type="button" id="join" onclick="game.snake.join($('#nick').val()); return false;"
+                       class="btn btn-block btn-primary" value="Play"/>
+            </div>
+
+            <div class="form-group">
+                <input type="button" id="spec" onclick="snake.emit('join'); return false;"
+                       class="btn btn-block btn-success" value="Spectate"/>
+            </div>
+
+            <div class="form-group">
+                <input id="swipe-checkbox" type="checkbox" value="">Use swipe</input>
+            </div>
+
+            <hr/>
+
+            <script type="text/javascript">
+                servers.getNames().forEach((item) => {
+                    $('#droplist').append('<option>' + item + '</option>');
+                });
+                $(function () {
+                    const updateServer = () => {
+                        const selected = $(this).find("option:selected").index();
+                        game.snake.connectTo(servers.getServer(selected));
+                    };
+                    $('#droplist').on('change', updateServer);
+                });
+            </script>
+        </form>
+
+        <span class="text-muted" style="text-align: center">Controls: Use arrows to control snake.<br/>Press escape to close game</span>
+
+        <hr/>
+    </div>
+</div>
+
+<canvas id="canvas" width="800" height="600"></canvas>
+<div id="top-list"></div>
+<div id="bottom-chat"></div>
+<script src="snake/game.js"></script>
+
+</body>
+</html>
