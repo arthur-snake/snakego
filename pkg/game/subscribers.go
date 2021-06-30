@@ -1,16 +1,12 @@
 package game
 
 import (
-	"github.com/arthur-snake/snakego/pkg/domain"
+	"github.com/arthur-snake/snakego/pkg/proto"
 	"sync"
 )
 
-type Subscriber interface {
-	SendMessage(msg domain.Message)
-}
-
 type Subscribers struct {
-	list []Subscriber
+	list []proto.Player
 	lock sync.Mutex
 }
 
@@ -18,19 +14,19 @@ func NewSubscribers() *Subscribers {
 	return &Subscribers{}
 }
 
-func (s *Subscribers) Add(sub Subscriber) {
+func (s *Subscribers) Add(p proto.Player) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	s.list = append(s.list, sub)
+	s.list = append(s.list, p)
 }
 
-func (s *Subscribers) Remove(sub Subscriber) {
+func (s *Subscribers) Remove(p proto.Player) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
 	for i := 0; i < len(s.list); i++ {
-		if s.list[i] == sub {
+		if s.list[i] == p {
 			s.list[i] = s.list[len(s.list)-1]
 			s.list = s.list[:len(s.list)-1]
 			return
@@ -38,18 +34,24 @@ func (s *Subscribers) Remove(sub Subscriber) {
 	}
 }
 
-func (s *Subscribers) GetAll() []Subscriber {
+func (s *Subscribers) GetAll() []proto.Player {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	var all []Subscriber
+	var all []proto.Player
 	all = append(all, s.list...)
 	return all
 }
 
-func (s *Subscribers) Broadcast(msg domain.Message) {
+func (s *Subscribers) Broadcast(f func(proto.Player)) {
 	all := s.GetAll()
 	for _, it := range all {
-		it.SendMessage(msg)
+		f(it)
 	}
+}
+
+func (s *Subscribers) BroadcastUpdate(upd proto.UpdateMessage) {
+	s.Broadcast(func(player proto.Player) {
+		player.Update(upd)
+	})
 }

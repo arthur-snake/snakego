@@ -2,11 +2,13 @@ package main
 
 import (
 	"embed"
+	"github.com/arthur-snake/snakego/pkg/lookup"
+	"io/fs"
+	"net/http"
+
 	"github.com/arthur-snake/snakego/pkg/domain"
 	"github.com/arthur-snake/snakego/pkg/game"
 	"github.com/arthur-snake/snakego/pkg/ws"
-	"io/fs"
-	"net/http"
 
 	"github.com/arthur-snake/snakego/pkg/conf"
 
@@ -36,18 +38,20 @@ func main() {
 		}
 	}()
 
-	server := game.NewServer(domain.DefaultGame)
-	go server.Run()
-
 	staticFiles, err := fs.Sub(content, "static")
 	if err != nil {
 		log.WithError(err).Fatal("failed to found static files")
 	}
 
-	h := ws.NewHandler(server)
+	server := game.NewServer(domain.DefaultGame)
+	go server.Run()
+
+	servers := lookup.NewSingle(server)
+	wsHandler := ws.NewHandler(servers)
+
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.FS(staticFiles)))
-	mux.HandleFunc("/ws", h.Handle)
+	mux.HandleFunc("/ws", wsHandler.Handle)
 
 	log.WithField("bind", cfg.ServerBind).Info("starting server")
 	http.ListenAndServe(cfg.ServerBind, mux)

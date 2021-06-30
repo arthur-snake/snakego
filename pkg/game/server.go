@@ -1,25 +1,26 @@
 package game
 
 import (
-	"github.com/arthur-snake/snakego/pkg/domain"
-	"github.com/arthur-snake/snakego/pkg/draws"
-	log "github.com/sirupsen/logrus"
+	"github.com/arthur-snake/snakego/pkg/proto"
 	"sync"
 	"time"
+
+	"github.com/arthur-snake/snakego/pkg/domain"
+	"github.com/arthur-snake/snakego/pkg/draws"
 )
 
 type types struct {
-	free  domain.IDInfo
-	block domain.IDInfo
+	free  proto.UpdateID
+	block proto.UpdateID
 }
 
 var basicTypes = types{
-	free: domain.IDInfo{
+	free: proto.UpdateID{
 		ID:    "0",
 		Type:  domain.FreeCell,
 		Color: domain.ClearColor,
 	},
-	block: domain.IDInfo{
+	block: proto.UpdateID{
 		ID:    "1",
 		Type:  domain.BlockCell,
 		Color: domain.BlockColor,
@@ -28,7 +29,7 @@ var basicTypes = types{
 
 type Server struct {
 	cfg       domain.GameConfig
-	field     [][]domain.CellUpdate
+	field     [][]domain.Cell
 	slabQueue []draws.Slab
 
 	connected   *Subscribers
@@ -37,13 +38,11 @@ type Server struct {
 }
 
 func NewServer(cfg domain.GameConfig) *Server {
-	field := make([][]domain.CellUpdate, cfg.Size.SizeX)
+	field := make([][]domain.Cell, cfg.Size.SizeX)
 	for x := 0; x < cfg.Size.SizeX; x++ {
-		field[x] = make([]domain.CellUpdate, cfg.Size.SizeY)
+		field[x] = make([]domain.Cell, cfg.Size.SizeY)
 		for y := 0; y < cfg.Size.SizeY; y++ {
-			field[x][y] = domain.CellUpdate{
-				X:  x,
-				Y:  y,
+			field[x][y] = domain.Cell{
 				ID: basicTypes.free.ID,
 			}
 		}
@@ -55,6 +54,43 @@ func NewServer(cfg domain.GameConfig) *Server {
 		connected: NewSubscribers(),
 		types:     basicTypes,
 	}
+}
+
+func (s *Server) Connect(player proto.Player) {
+	s.GlobalLock(func() {
+		s.connected.Add(player)
+
+		upd := s.buildUpdate()
+		init := proto.InitMessage{
+			Update: upd,
+			Size:   s.cfg.Size,
+		}
+
+		player.Init(init)
+	})
+}
+
+func (s *Server) Join(player proto.Player, message proto.JoinMessage) {
+	s.GlobalLock(func() {
+		slabs := draws.Text(s.cfg.Size.SizeY, message.Nick)
+		s.slabQueue = append(s.slabQueue, slabs...)
+	})
+}
+
+func (s *Server) Leave(player proto.Player, message proto.LeaveMessage) {
+	panic("implement me")
+}
+
+func (s *Server) Turn(player proto.Player, message proto.TurnMessage) {
+	panic("implement me")
+}
+
+func (s *Server) Chat(player proto.Player, message proto.ChatMessage) {
+	panic("implement me")
+}
+
+func (s *Server) Disconnect(player proto.Player) {
+	s.connected.Remove(player)
 }
 
 func (s *Server) Run() {
@@ -74,13 +110,11 @@ func (s *Server) Tick() {
 
 			for _, y := range cur.Filled {
 				s.field[s.cfg.Size.SizeX-1][y].ID = s.types.block.ID
-				log.Infof("filled cell %v %v", s.cfg.Size.SizeX-1, y)
 			}
 		}
 
-		msg := s.buildInitMessage()
-		msg.Act = "upd"
-		s.connected.Broadcast(msg)
+		upd := s.buildUpdate()
+		s.connected.BroadcastUpdate(upd)
 	})
 }
 
@@ -91,39 +125,28 @@ func (s *Server) GlobalLock(f func()) {
 	f()
 }
 
-func (s *Server) ConnectSession(session *Session) {
-	s.GlobalLock(func() {
-		s.connected.Add(session)
-		session.SendMessage(s.buildInitMessage())
-	})
-}
-
-func (s *Server) DisconnectSession(session *Session) {
-	s.connected.Remove(session)
-}
-
-func (s *Server) buildInitMessage() domain.InitMessage {
-	var cells []domain.CellUpdate
+func (s *Server) buildUpdate() proto.UpdateMessage {
+	var cells []proto.UpdateCell
 	for x := 0; x < s.cfg.Size.SizeX; x++ {
 		for y := 0; y < s.cfg.Size.SizeY; y++ {
-			cells = append(cells, s.field[x][y])
+			cells = append(cells, proto.UpdateCell{
+				Location: domain.Location{
+					X: x,
+					Y: y,
+				},
+				ID:   s.field[x][y].ID,
+				Food: 0,
+			})
 		}
 	}
 
-	return domain.InitMessage{
-		Act:        "init",
-		MapUpdates: domain.MarshalMapUpdates(cells),
-		IDUpdates:  []domain.IDInfo{s.types.free, s.types.block},
-		SizeX:      s.cfg.Size.SizeX,
-		SizeY:      s.cfg.Size.SizeY,
+	return proto.UpdateMessage{
+		IDUpdates: []proto.UpdateID{
+			s.types.free, s.types.block,
+		},
+		CellUpdates: cells,
+		ChatUpdates: nil,
 	}
-}
-
-func (s *Server) Join(text string) {
-	s.GlobalLock(func() {
-		slabs := draws.Text(s.cfg.Size.SizeY, text)
-		s.slabQueue = append(s.slabQueue, slabs...)
-	})
 }
 
 func (s *Server) ShiftAll(dir domain.Direction) {

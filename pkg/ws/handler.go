@@ -1,29 +1,37 @@
 package ws
 
 import (
-	"github.com/arthur-snake/snakego/pkg/game"
+	"github.com/arthur-snake/snakego/pkg/proto"
+	"net/http"
+
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	"net/http"
 )
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
+		// TODO: enable reasonable origin check
 		return true
 	},
 }
 
-type Handler struct {
-	server *game.Server
+type serverLookup interface {
+	Lookup(name string) proto.Server
 }
 
-func NewHandler(server *game.Server) *Handler {
+type Handler struct {
+	lookup serverLookup
+}
+
+func NewHandler(lookup serverLookup) *Handler {
 	return &Handler{
-		server: server,
+		lookup: lookup,
 	}
 }
 
 func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
+	server := h.lookup.Lookup("") // TODO: name
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.WithError(err).Error("failed to upgrade ws")
@@ -31,6 +39,6 @@ func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	session := game.NewSession(conn, h.server)
-	session.Start()
+	player := NewPlayer(conn, server)
+	player.ExecuteSync()
 }

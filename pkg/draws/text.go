@@ -1,11 +1,12 @@
 package draws
 
 import (
+	"image"
+	"image/color"
+
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
 	"golang.org/x/image/math/fixed"
-	"image"
-	"image/color"
 )
 
 func addLabel(img *image.RGBA, x, y int, label string) {
@@ -22,7 +23,7 @@ func addLabel(img *image.RGBA, x, y int, label string) {
 }
 
 func Text(h int, text string) []Slab {
-	img := image.NewRGBA(image.Rect(0, 0, len(text)*9, h-1))
+	img := image.NewRGBA(image.Rect(0, 0, len(text)*8, h-1))
 	addLabel(img, 0, h-1, text)
 
 	var slabs []Slab
