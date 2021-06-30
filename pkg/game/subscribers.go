@@ -1,8 +1,13 @@
 package game
 
-import "sync"
+import (
+	"github.com/arthur-snake/snakego/pkg/domain"
+	"sync"
+)
 
-type Subscriber interface{}
+type Subscriber interface {
+	SendMessage(msg domain.Message)
+}
 
 type Subscribers struct {
 	list []Subscriber
@@ -40,4 +45,11 @@ func (s *Subscribers) GetAll() []Subscriber {
 	var all []Subscriber
 	all = append(all, s.list...)
 	return all
+}
+
+func (s *Subscribers) Broadcast(msg domain.Message) {
+	all := s.GetAll()
+	for _, it := range all {
+		it.SendMessage(msg)
+	}
 }

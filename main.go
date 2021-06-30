@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/arthur-snake/snakego/pkg/domain"
 	"github.com/arthur-snake/snakego/pkg/game"
 	"github.com/arthur-snake/snakego/pkg/ws"
 	"net/http"
@@ -30,7 +31,8 @@ func main() {
 		}
 	}()
 
-	server := game.NewServer()
+	server := game.NewServer(domain.DefaultGame)
+	go server.Run()
 
 	h := ws.NewHandler(server)
 	mux := http.NewServeMux()

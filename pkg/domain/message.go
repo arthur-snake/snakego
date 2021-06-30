@@ -60,8 +60,8 @@ type InitMessage struct {
 	IDUpdates   []IDInfo     `json:"u,omitempty"`
 	ChatUpdates []ChatUpdate `json:"c,omitempty"`
 
-	Rows    int `json:"rows"`
-	Columns int `json:"columns"`
+	SizeX int `json:"columns"`
+	SizeY int `json:"rows"`
 }
 
 func (i InitMessage) Marshal() []byte {

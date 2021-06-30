@@ -4,6 +4,7 @@ type Direction struct {
 	ID     int
 	DeltaX int
 	DeltaY int
+	Name   string
 }
 
 func (d Direction) Negate() Direction {
@@ -15,8 +16,8 @@ func GetDirection(id int) Direction {
 }
 
 var Directions = []Direction{
-	{0, 0, -1},
-	{1, -1, 0},
-	{2, 0, 1},
-	{3, 1, 0},
+	{0, 0, -1, "UP"},
+	{1, -1, 0, "LEFT"},
+	{2, 0, 1, "DOWN"},
+	{3, 1, 0, "RIGHT"},
 }

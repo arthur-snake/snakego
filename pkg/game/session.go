@@ -4,7 +4,6 @@ import (
 	"github.com/arthur-snake/snakego/pkg/domain"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	"io"
 	"sync"
 )
 
@@ -39,11 +38,16 @@ func (s *Session) Start() {
 	for {
 		var playerMessage map[string]string
 		err := s.conn.ReadJSON(&playerMessage)
-		if err == io.EOF || err == io.ErrUnexpectedEOF {
+		if err != nil {
 			// end session
+			log.WithError(err).Error("failed to read player message")
 			return
 		}
 
 		log.WithField("msg", playerMessage).Info("got message from player")
+
+		if playerMessage["act"] == "join" {
+			s.server.Join(playerMessage["nick"])
+		}
 	}
 }
