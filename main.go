@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	"github.com/arthur-snake/snakego/pkg/domain"
 	"github.com/arthur-snake/snakego/pkg/game"
 	"github.com/arthur-snake/snakego/pkg/ws"
+	"io/fs"
 	"net/http"
 
 	"github.com/arthur-snake/snakego/pkg/conf"
@@ -11,6 +13,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 )
+
+//go:embed static/*
+var content embed.FS
 
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
@@ -34,9 +39,15 @@ func main() {
 	server := game.NewServer(domain.DefaultGame)
 	go server.Run()
 
+	staticFiles, err := fs.Sub(content, "static")
+	if err != nil {
+		log.WithError(err).Fatal("failed to found static files")
+	}
+
 	h := ws.NewHandler(server)
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", h.Handle)
+	mux.Handle("/", http.FileServer(http.FS(staticFiles)))
+	mux.HandleFunc("/ws", h.Handle)
 
 	log.WithField("bind", cfg.ServerBind).Info("starting server")
 	http.ListenAndServe(cfg.ServerBind, mux)

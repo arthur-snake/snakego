@@ -2,7 +2,7 @@
 
 function Servers() {
     const list = [
-        ["ws://localhost:8080/", "local server"],
+        ["ws://localhost:8080/ws", "local server"],
     ];
 
     this.getNames = () => {
