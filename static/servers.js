@@ -2,6 +2,7 @@
 
 function Servers() {
     const list = [
+        ["ws://" + location.host + "/ws", "current server"],
         ["ws://localhost:8080/ws", "local server"],
     ];
 
