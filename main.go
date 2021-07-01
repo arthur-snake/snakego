@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/arthur-snake/snakego/engine/game"
+	"github.com/arthur-snake/snakego/pkg/handlers"
+
 	"github.com/arthur-snake/snakego/pkg/structures/lookup"
 
 	"github.com/arthur-snake/snakego/pkg/ws"
@@ -43,15 +45,23 @@ func main() {
 		log.WithError(err).Fatal("failed to found static files")
 	}
 
-	realServer, auto := game.NewStdServer(game.DefaultGame)
-	go realServer.Run()
+	servers := lookup.NewMany()
 
-	servers := lookup.NewSingle(auto)
+	srv1, auto1 := game.NewStdServer(game.DefaultGame)
+	go srv1.Run()
+	servers.Add("std", auto1)
+	servers.Add("", auto1)
+
+	srv2, auto2 := game.NewTickerServer(game.DefaultGame)
+	go srv2.Run()
+	servers.Add("tick", auto2)
+
 	wsHandler := ws.NewHandler(servers)
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.FS(staticFiles)))
 	mux.HandleFunc("/ws", wsHandler.Handle)
+	mux.HandleFunc("/servers", handlers.ShowServers(servers))
 
 	log.WithField("bind", cfg.ServerBind).Info("starting server")
 	err = http.ListenAndServe(cfg.ServerBind, mux)

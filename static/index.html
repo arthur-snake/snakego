@@ -120,16 +120,21 @@
             <hr/>
 
             <script type="text/javascript">
-                servers.getNames().forEach((item) => {
-                    $('#droplist').append('<option>' + item + '</option>');
-                });
-                $(function () {
-                    const updateServer = () => {
-                        const selected = $(this).find("option:selected").index();
-                        game.snake.connectTo(servers.getServer(selected));
-                    };
-                    $('#droplist').on('change', updateServer);
-                });
+                function initDropdown() {
+                    $('#droplist').empty();
+                    servers.getNames().forEach((item) => {
+                        $('#droplist').append('<option>' + item + '</option>');
+                    });
+                    $(function () {
+                        const updateServer = () => {
+                            const selected = $(this).find("option:selected").index();
+                            game.snake.connectTo(servers.getServer(selected));
+                        };
+                        $('#droplist').on('change', updateServer);
+                    });
+                }
+
+                initDropdown();
             </script>
         </form>
 

@@ -31,7 +31,12 @@ func NewHandler(lookup serverLookup) *Handler {
 }
 
 func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
-	server := h.lookup.Lookup("") // TODO: name
+	name := r.URL.Query().Get("name")
+
+	server := h.lookup.Lookup(name)
+	if server == nil {
+		return
+	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

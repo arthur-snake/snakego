@@ -1,8 +1,8 @@
 'use strict';
 
 function Servers() {
-    const list = [
-        ["ws://" + location.host + "/ws", "current server"],
+    let list = [
+        ["ws://" + location.host + "/ws?name=tick", "current server"],
         ["ws://localhost:8080/ws", "local server"],
     ];
 
@@ -16,6 +16,24 @@ function Servers() {
         if (index < 0 || index >= list.length) return undefined;
         return list[index][0];
     }
+
+    fetch('/servers')
+        .then(it => it.json())
+        .then(arr => {
+            const newList =
+                Array.from(arr)
+                    .filter(obj => !!obj.Name)
+                    .map(obj => ["ws://" + location.host + "/ws?name=" + obj.Name, "Server #" + obj.Name]);
+
+            if (!!newList) {
+                list = newList;
+                console.log(list);
+
+                if (initDropdown) {
+                    initDropdown();
+                }
+            }
+        });
 }
 
 const servers = new Servers();
