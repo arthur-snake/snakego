@@ -30,9 +30,7 @@ type InitMessage struct {
 // UpdateCell contains update for ID and Food at specified Location.
 type UpdateCell struct {
 	Location domain.Pair
-
-	ID   domain.ObjectID
-	Food int
+	Cell     domain.Cell
 }
 
 type UpdateID struct {

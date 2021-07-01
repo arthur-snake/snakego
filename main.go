@@ -5,8 +5,8 @@ import (
 	"io/fs"
 	"net/http"
 
-	game2 "github.com/arthur-snake/snakego/engine/game"
-	lookup2 "github.com/arthur-snake/snakego/pkg/structures/lookup"
+	"github.com/arthur-snake/snakego/engine/game"
+	"github.com/arthur-snake/snakego/pkg/structures/lookup"
 
 	"github.com/arthur-snake/snakego/pkg/ws"
 
@@ -43,10 +43,10 @@ func main() {
 		log.WithError(err).Fatal("failed to found static files")
 	}
 
-	tickerServer, auto := game2.NewTickerServer(game2.DefaultGame)
-	go tickerServer.Run()
+	realServer, auto := game.NewStdServer(game.DefaultGame)
+	go realServer.Run()
 
-	servers := lookup2.NewSingle(auto)
+	servers := lookup.NewSingle(auto)
 	wsHandler := ws.NewHandler(servers)
 
 	mux := http.NewServeMux()

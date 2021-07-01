@@ -16,7 +16,7 @@ type TickerServer struct {
 	mutex sync.Mutex
 
 	cfg       Config
-	field     [][]domain.ObjectID
+	field     [][]domain.Cell
 	slabQueue []draws.Slab
 
 	ids     *servtool.IDs
@@ -26,18 +26,11 @@ type TickerServer struct {
 	auto *servtool.AutoServer
 }
 
+//nolint:dupl
 func NewTickerServer(cfg Config) (*TickerServer, *servtool.AutoServer) {
-	ids := servtool.NewIDs()
-	free := ids.Add(proto.UpdateID{
-		Type:  domain.FreeCell,
-		Color: domain.ClearColor,
-	})
-	block := ids.Add(proto.UpdateID{
-		Type:  domain.BlockCell,
-		Color: domain.BlockColor,
-	})
+	ids, free, _, block := servtool.NewBasicIDs()
 
-	field := maptool.CreateMap(cfg.Size, free.ID)
+	field := maptool.CreateMap(cfg.Size, domain.Cell{ID: free.ID})
 	state := servtool.NewState(cfg.Size, servtool.StateUpdate{
 		NewMap: field,
 		NewIDs: ids.All(),
@@ -92,14 +85,14 @@ func (s *TickerServer) tick() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	maptool.ShiftDir(s.cfg.Size, s.field, domain.Left.Dir, s.freeID)
+	maptool.ShiftDir(s.cfg.Size, s.field, domain.Left.Dir, domain.Cell{ID: s.freeID})
 
 	if len(s.slabQueue) > 0 {
 		cur := s.slabQueue[0]
 		s.slabQueue = s.slabQueue[1:]
 
 		for _, y := range cur.Filled {
-			s.field[s.cfg.Size.SizeX-1][y] = s.blockID
+			s.field[s.cfg.Size.SizeX-1][y].ID = s.blockID
 		}
 	}
 

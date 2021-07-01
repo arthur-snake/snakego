@@ -15,6 +15,24 @@ func NewIDs() *IDs {
 	}
 }
 
+func NewBasicIDs() (ids *IDs, free, block, food proto.UpdateID) {
+	ids = NewIDs()
+	free = ids.Add(proto.UpdateID{
+		Type:  domain.FreeCell,
+		Color: domain.ClearColor,
+	})
+	food = ids.Add(proto.UpdateID{
+		Type:  domain.FoodCell,
+		Color: domain.ClearColor,
+	})
+	block = ids.Add(proto.UpdateID{
+		Type:  domain.BlockCell,
+		Color: domain.BlockColor,
+	})
+
+	return ids, free, food, block
+}
+
 func (p *IDs) Remove(id domain.ObjectID) {
 	delete(p.ids, id)
 }

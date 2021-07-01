@@ -8,9 +8,9 @@ import (
 )
 
 func convertCellUpdate(c proto.UpdateCell) string {
-	str := fmt.Sprintf("%d.%d#%s", c.Location.X, c.Location.Y, c.ID)
-	if c.Food > 0 { // TODO: omitempty?
-		str += fmt.Sprintf("*%d", c.Food)
+	str := fmt.Sprintf("%d.%d#%s", c.Location.X, c.Location.Y, c.Cell.ID)
+	if c.Cell.Food > 0 { // TODO: omitempty?
+		str += fmt.Sprintf("*%d", c.Cell.Food)
 	}
 	return str
 }

@@ -7,19 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type PlayerBase struct {
-	Player proto.Player
-	InGame bool
-	Nick   string
-}
-
-func NewPlayerBase(p proto.Player) *PlayerBase {
-	return &PlayerBase{
-		Player: p,
-		InGame: false,
-	}
-}
-
 type Players struct {
 	players      map[uuid.UUID]*PlayerBase
 	playersMutex sync.RWMutex
@@ -51,4 +38,16 @@ func (p *Players) Remove(player proto.Player) {
 	p.playersMutex.Lock()
 	defer p.playersMutex.Unlock()
 	delete(p.players, player.UID())
+}
+
+func (p *Players) All() []*PlayerBase {
+	p.playersMutex.RLock()
+	defer p.playersMutex.RUnlock()
+
+	players := make([]*PlayerBase, 0, len(p.players))
+	for _, p := range p.players {
+		players = append(players, p)
+	}
+
+	return players
 }

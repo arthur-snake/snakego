@@ -7,19 +7,19 @@ import (
 )
 
 type StateUpdate struct {
-	NewMap       [][]domain.ObjectID
+	NewMap       [][]domain.Cell
 	NewIDs       []proto.UpdateID
 	ChatMessages []proto.UpdateChat
 }
 
 type State struct {
 	size      domain.FieldSize
-	latestMap [][]domain.ObjectID
+	latestMap [][]domain.Cell
 	latestIDs map[domain.ObjectID]proto.UpdateID
 }
 
 func NewState(size domain.FieldSize, upd StateUpdate) *State {
-	field := maptool.CreateMap(size, "")
+	field := maptool.CreateMap(size, domain.Cell{})
 	for x := 0; x < size.SizeX; x++ {
 		for y := 0; y < size.SizeY; y++ {
 			field[x][y] = upd.NewMap[x][y]
@@ -39,7 +39,7 @@ func (s *State) Init() proto.InitMessage {
 		for y := 0; y < s.size.SizeY; y++ {
 			cells = append(cells, proto.UpdateCell{
 				Location: domain.Pair{X: x, Y: y},
-				ID:       s.latestMap[x][y],
+				Cell:     s.latestMap[x][y],
 			})
 		}
 	}
@@ -64,7 +64,7 @@ func (s *State) Update(upd StateUpdate) proto.UpdateMessage {
 				s.latestMap[x][y] = after
 				cells = append(cells, proto.UpdateCell{
 					Location: domain.Pair{X: x, Y: y},
-					ID:       after,
+					Cell:     after,
 				})
 			}
 		}

@@ -48,6 +48,10 @@ func (s *AutoServer) MakeUpdate(upd StateUpdate) {
 	})
 }
 
+func (s *AutoServer) Players() []*PlayerBase {
+	return s.players.All()
+}
+
 // Client zone
 
 func (s *AutoServer) Connect(player proto.Player) {

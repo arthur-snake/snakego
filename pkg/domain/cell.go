@@ -11,3 +11,13 @@ var (
 	PlayerCell CellType = "player"
 	BlockCell  CellType = "block"
 )
+
+type Cell struct {
+	ID   ObjectID
+	Food int
+}
+
+type CellWithLocation struct {
+	Location Pair
+	Cell     *Cell
+}
