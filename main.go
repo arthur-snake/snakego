@@ -2,12 +2,11 @@ package main
 
 import (
 	"embed"
-	"github.com/arthur-snake/snakego/pkg/lookup"
+	game2 "github.com/arthur-snake/snakego/engine/game"
+	lookup2 "github.com/arthur-snake/snakego/pkg/structures/lookup"
 	"io/fs"
 	"net/http"
 
-	"github.com/arthur-snake/snakego/pkg/domain"
-	"github.com/arthur-snake/snakego/pkg/game"
 	"github.com/arthur-snake/snakego/pkg/ws"
 
 	"github.com/arthur-snake/snakego/pkg/conf"
@@ -43,10 +42,10 @@ func main() {
 		log.WithError(err).Fatal("failed to found static files")
 	}
 
-	server := game.NewServer(domain.DefaultGame)
-	go server.Run()
+	tickerServer, auto := game2.NewTickerServer(game2.DefaultGame)
+	go tickerServer.Run()
 
-	servers := lookup.NewSingle(server)
+	servers := lookup2.NewSingle(auto)
 	wsHandler := ws.NewHandler(servers)
 
 	mux := http.NewServeMux()

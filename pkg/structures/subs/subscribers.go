@@ -1,4 +1,4 @@
-package game
+package subs
 
 import (
 	"github.com/arthur-snake/snakego/pkg/proto"

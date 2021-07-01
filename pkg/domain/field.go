@@ -5,16 +5,16 @@ type FieldSize struct {
 	SizeY int
 }
 
-func (f FieldSize) Move(l Location, d Direction) Location {
-	return f.Fit(l.Add(d))
+func (f FieldSize) Move(loc Pair, dir Pair) Pair {
+	return f.Fit(loc.Add(dir))
 }
 
-func (f FieldSize) Fit(l Location) Location {
-	return Location{floorMod(l.X, f.SizeX), floorMod(l.Y, f.SizeY)}
+func (f FieldSize) Fit(loc Pair) Pair {
+	return Pair{floorMod(loc.X, f.SizeX), floorMod(loc.Y, f.SizeY)}
 }
 
-func (f FieldSize) IsInside(l Location) bool {
-	return l.X >= 0 && l.Y >= 0 && l.X < f.SizeX && l.Y <= f.SizeY
+func (f FieldSize) IsInside(loc Pair) bool {
+	return loc.X >= 0 && loc.Y >= 0 && loc.X < f.SizeX && loc.Y <= f.SizeY
 }
 
 func floorMod(a, b int) int {

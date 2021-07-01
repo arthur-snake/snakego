@@ -1,34 +1,30 @@
 package domain
 
-type Direction struct {
-	ID     int
-	DeltaX int
-	DeltaY int
-	Name   string
+type BaseDirection struct {
+	Dir  Pair
+	Name string
 }
 
-func (d Direction) Negate() Direction {
-	return Directions[d.ID^2]
+var baseDirections = []BaseDirection{
+	{Pair{0, -1}, "UP"},
+	{Pair{-1, 0}, "LEFT"},
+	{Pair{0, 1}, "DOWN"},
+	{Pair{1, 0}, "RIGHT"},
 }
 
-func GetDirection(id int) Direction {
-	return Directions[id]
-}
+var (
+	Up    = baseDirections[0]
+	Left  = baseDirections[1]
+	Down  = baseDirections[2]
+	Right = baseDirections[3]
+)
 
-// TODO: add base directions
-var Directions = []Direction{
-	{0, 0, -1, "UP"},
-	{1, -1, 0, "LEFT"},
-	{2, 0, 1, "DOWN"},
-	{3, 1, 0, "RIGHT"},
-}
-
-func ParseDirection(str string) (Direction, bool) {
-	for _, dir := range Directions {
+func ParseBaseDirection(str string) (BaseDirection, bool) {
+	for _, dir := range baseDirections {
 		if dir.Name == str {
 			return dir, true
 		}
 	}
 
-	return Direction{}, false
+	return BaseDirection{}, false
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/arthur-snake/snakego/pkg/domain"
 	"github.com/arthur-snake/snakego/pkg/proto"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"sync"
@@ -13,13 +14,20 @@ type Player struct {
 	conn      *websocket.Conn
 	server    proto.Server
 	writeLock sync.Mutex
+
+	uid uuid.UUID
 }
 
 func NewPlayer(conn *websocket.Conn, server proto.Server) *Player {
 	return &Player{
 		conn:   conn,
 		server: server,
+		uid:    uuid.New(),
 	}
+}
+
+func (p *Player) UID() uuid.UUID {
+	return p.uid
 }
 
 func (p *Player) Init(message proto.InitMessage) {
@@ -91,7 +99,7 @@ func (p *Player) handleMessage(m map[string]string) {
 		p.server.Leave(p, proto.LeaveMessage{})
 
 	case "turn":
-		dir, ok := domain.ParseDirection(m["dir"])
+		dir, ok := domain.ParseBaseDirection(m["dir"])
 		if !ok {
 			log.WithField("msg", m).Error("unknown direction")
 			return

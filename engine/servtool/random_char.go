@@ -1,4 +1,4 @@
-package idpool
+package servtool
 
 import (
 	"math/rand"

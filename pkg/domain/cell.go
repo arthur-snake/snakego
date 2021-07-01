@@ -1,5 +1,8 @@
 package domain
 
+// ObjectID represents id of an object inside a cell.
+type ObjectID string
+
 type CellType string
 
 var (
@@ -8,7 +11,3 @@ var (
 	PlayerCell CellType = "player"
 	BlockCell  CellType = "block"
 )
-
-type Cell struct {
-	ID ObjectID
-}
