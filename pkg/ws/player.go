@@ -2,12 +2,13 @@ package ws
 
 import (
 	"encoding/json"
+	"sync"
+
 	"github.com/arthur-snake/snakego/pkg/domain"
 	"github.com/arthur-snake/snakego/pkg/proto"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
 type Player struct {

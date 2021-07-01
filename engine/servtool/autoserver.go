@@ -1,10 +1,11 @@
 package servtool
 
 import (
+	"sync"
+
 	"github.com/arthur-snake/snakego/pkg/proto"
 	"github.com/arthur-snake/snakego/pkg/structures/subs"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
 type AutoImpl interface {
@@ -33,7 +34,7 @@ func NewAutoServer(impl AutoImpl, state *State) *AutoServer {
 	}
 }
 
-/// Server zone
+// Server zone
 
 func (s *AutoServer) TickLock(f func()) {
 	s.tickMutex.Lock()
@@ -47,7 +48,7 @@ func (s *AutoServer) MakeUpdate(upd StateUpdate) {
 	})
 }
 
-/// Client zone
+// Client zone
 
 func (s *AutoServer) Connect(player proto.Player) {
 	log.WithField("uid", player.UID()).Info("user connected")

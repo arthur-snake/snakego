@@ -1,11 +1,12 @@
 package game
 
 import (
+	"sync"
+	"time"
+
 	"github.com/arthur-snake/snakego/engine/maptool"
 	"github.com/arthur-snake/snakego/engine/servtool"
 	"github.com/arthur-snake/snakego/pkg/proto"
-	"sync"
-	"time"
 
 	"github.com/arthur-snake/snakego/pkg/domain"
 	"github.com/arthur-snake/snakego/pkg/draws"
@@ -56,7 +57,7 @@ func NewTickerServer(cfg Config) (*TickerServer, *servtool.AutoServer) {
 	return srv, auto
 }
 
-/// Player interface
+// Player interface
 
 func (s *TickerServer) Join(base *servtool.PlayerBase, message proto.JoinMessage) {
 	s.mutex.Lock()
@@ -78,7 +79,7 @@ func (s *TickerServer) Chat(base *servtool.PlayerBase, message proto.ChatMessage
 
 }
 
-/// Server methods
+// Server methods
 
 func (s *TickerServer) Run() {
 	ticker := time.NewTicker(s.cfg.TickTime)

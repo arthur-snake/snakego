@@ -10,8 +10,8 @@ import (
 )
 
 func addLabel(img *image.RGBA, x, y int, label string) {
-	col := color.RGBA{200, 100, 0, 255}
-	point := fixed.Point26_6{fixed.Int26_6(x * 64), fixed.Int26_6(y * 64)}
+	col := color.RGBA{R: 200, G: 100, A: 255}
+	point := fixed.Point26_6{X: fixed.Int26_6(x * 64), Y: fixed.Int26_6(y * 64)} //nolint:gomnd
 
 	d := &font.Drawer{
 		Dst:  img,
@@ -23,7 +23,9 @@ func addLabel(img *image.RGBA, x, y int, label string) {
 }
 
 func Text(h int, text string) []Slab {
-	img := image.NewRGBA(image.Rect(0, 0, len(text)*8, h-1))
+	const letterWidth = 8
+
+	img := image.NewRGBA(image.Rect(0, 0, len(text)*letterWidth, h-1))
 	addLabel(img, 0, h-1, text)
 
 	var slabs []Slab

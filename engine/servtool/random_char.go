@@ -9,5 +9,6 @@ var alpha = "abcdefghijklmnopqrstuvwxyz"
 var alphanumeric = "0123456789" + alpha + strings.ToUpper(alpha)
 
 func generateChar() uint8 {
-	return alphanumeric[rand.Intn(len(alphanumeric))]
+	// TODO: use better random?
+	return alphanumeric[rand.Intn(len(alphanumeric))] //nolint:gosec
 }

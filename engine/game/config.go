@@ -1,8 +1,9 @@
 package game
 
 import (
-	"github.com/arthur-snake/snakego/pkg/domain"
 	"time"
+
+	"github.com/arthur-snake/snakego/pkg/domain"
 )
 
 type Config struct {

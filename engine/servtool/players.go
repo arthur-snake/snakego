@@ -1,9 +1,10 @@
 package servtool
 
 import (
+	"sync"
+
 	"github.com/arthur-snake/snakego/pkg/proto"
 	"github.com/google/uuid"
-	"sync"
 )
 
 type PlayerBase struct {

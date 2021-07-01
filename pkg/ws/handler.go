@@ -1,8 +1,9 @@
 package ws
 
 import (
-	"github.com/arthur-snake/snakego/pkg/proto"
 	"net/http"
+
+	"github.com/arthur-snake/snakego/pkg/proto"
 
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"

@@ -5,7 +5,7 @@ type FieldSize struct {
 	SizeY int
 }
 
-func (f FieldSize) Move(loc Pair, dir Pair) Pair {
+func (f FieldSize) Move(loc, dir Pair) Pair {
 	return f.Fit(loc.Add(dir))
 }
 

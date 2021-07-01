@@ -1,8 +1,9 @@
 package subs
 
 import (
-	"github.com/arthur-snake/snakego/pkg/proto"
 	"sync"
+
+	"github.com/arthur-snake/snakego/pkg/proto"
 )
 
 type Subscribers struct {

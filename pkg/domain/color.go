@@ -13,5 +13,6 @@ var (
 )
 
 func GenerateColor() Color {
-	return RandomColors[rand.Intn(len(RandomColors))]
+	// TODO: use better random?
+	return RandomColors[rand.Intn(len(RandomColors))] //nolint:gosec
 }

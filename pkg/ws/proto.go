@@ -2,8 +2,9 @@ package ws
 
 import (
 	"fmt"
-	"github.com/arthur-snake/snakego/pkg/proto"
 	"strings"
+
+	"github.com/arthur-snake/snakego/pkg/proto"
 )
 
 func convertCellUpdate(c proto.UpdateCell) string {
@@ -34,7 +35,7 @@ type serverMessage struct {
 }
 
 func convertInitMessage(message proto.InitMessage) serverMessage {
-	msg := convertUpdateMessage(message.Update)
+	msg := convertUpdateMessage(*message.Update)
 	msg.Act = "init"
 	msg.SizeX = message.Size.SizeX
 	msg.SizeY = message.Size.SizeY

@@ -23,8 +23,8 @@ type UpdateMessage struct {
 
 // InitMessage contains all info to initialize player.
 type InitMessage struct {
-	Update UpdateMessage
-	Size   domain.FieldSize
+	Update *UpdateMessage
+	Size   *domain.FieldSize
 }
 
 // UpdateCell contains update for ID and Food at specified Location.

@@ -45,11 +45,11 @@ func (s *State) Init() proto.InitMessage {
 	}
 
 	return proto.InitMessage{
-		Update: proto.UpdateMessage{
+		Update: &proto.UpdateMessage{
 			IDUpdates:   convertIDsFromMap(s.latestIDs),
 			CellUpdates: cells,
 		},
-		Size: s.size,
+		Size: &s.size,
 	}
 }
 

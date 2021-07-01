@@ -2,7 +2,7 @@ package maptool
 
 import "github.com/arthur-snake/snakego/pkg/domain"
 
-func IterateX(start, end int, shiftDir int, callback func(int)) {
+func IterateX(start, end, shiftDir int, callback func(int)) {
 	if shiftDir <= 0 {
 		for x := start; x < end; x++ {
 			callback(x)
