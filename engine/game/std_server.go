@@ -176,7 +176,7 @@ func (s *StdServer) tick() {
 }
 
 func (s *StdServer) moveHead(p *servtool.PlayerBase) {
-	dir := p.Controller.Move().Dir
+	dir := p.Controller.PreMove().Dir
 
 	head := p.Cells[p.Length()-1]
 	nxt := s.cfg.Size.Move(head, dir)
