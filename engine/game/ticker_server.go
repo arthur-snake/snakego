@@ -15,9 +15,10 @@ import (
 type TickerServer struct {
 	mutex sync.Mutex
 
-	cfg       Config
-	field     [][]domain.Cell
-	slabQueue []draws.Slab
+	cfg                Config
+	field              [][]domain.Cell
+	slabQueue          []draws.Slab
+	ticksAfterLastSlab int
 
 	ids     *servtool.IDs
 	freeID  domain.ObjectID
@@ -84,6 +85,13 @@ func (s *TickerServer) tick() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
+	s.ticksAfterLastSlab++
+
+	if len(s.slabQueue) == 0 && s.ticksAfterLastSlab > s.cfg.Size.SizeX+1 {
+		// no updates
+		return
+	}
+
 	maptool.ShiftDir(s.cfg.Size, s.field, domain.Left.Dir, domain.Cell{ID: s.freeID})
 
 	if len(s.slabQueue) > 0 {
@@ -93,10 +101,12 @@ func (s *TickerServer) tick() {
 		for _, y := range cur.Filled {
 			s.field[s.cfg.Size.SizeX-1][y].ID = s.blockID
 		}
+
+		s.ticksAfterLastSlab = 0
 	}
 
 	s.auto.MakeUpdate(&servtool.StateUpdate{
 		NewMap: s.field,
-		NewIDs: s.ids.All(),
+		// NewIDs is not updated
 	})
 }

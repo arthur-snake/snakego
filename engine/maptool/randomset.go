@@ -63,6 +63,10 @@ func (s *RandomSet) Random() (domain.CellWithLocation, bool) {
 }
 
 func (s *RandomSet) PurgeAll() []domain.CellWithLocation {
+	if len(s.all) == 0 {
+		return nil
+	}
+
 	res := s.all
 
 	s.pos = map[domain.Pair]int{}
