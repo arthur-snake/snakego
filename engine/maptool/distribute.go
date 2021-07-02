@@ -1,8 +1,9 @@
 package maptool
 
 import (
-	"github.com/arthur-snake/snakego/pkg/domain"
 	"math/rand"
+
+	"github.com/arthur-snake/snakego/pkg/domain"
 )
 
 type Distribution map[domain.ObjectID][]domain.CellWithLocation
