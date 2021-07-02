@@ -19,7 +19,7 @@ const (
 
 type StdServer struct {
 	mutex sync.Mutex
-	field [][]domain.Cell
+	fmap  *maptool.FastMap
 	ids   *servtool.IDs
 
 	cfg  Config
@@ -29,19 +29,18 @@ type StdServer struct {
 	foodID domain.ObjectID
 }
 
-//nolint:dupl
 func NewStdServer(cfg Config) (*StdServer, *servtool.AutoServer) {
 	ids, free, food, _ := servtool.NewBasicIDs()
 
-	field := maptool.CreateMap(cfg.Size, domain.Cell{ID: free.ID})
-	state := servtool.NewState(cfg.Size, servtool.StateUpdate{
-		NewMap: field,
+	fmap := maptool.NewFastMap(cfg.Size, domain.Cell{ID: free.ID})
+	state := servtool.NewState(cfg.Size, &servtool.StateUpdate{
+		NewMap: fmap.Field(),
 		NewIDs: ids.All(),
 	})
 
 	srv := &StdServer{
 		cfg:    cfg,
-		field:  field,
+		fmap:   fmap,
 		ids:    ids,
 		freeID: free.ID,
 		foodID: food.ID,
@@ -78,13 +77,8 @@ func (s *StdServer) Join(base *servtool.PlayerBase, message proto.JoinMessage) {
 		nick = defaultNick
 	}
 
-	var loc domain.Pair
-	distr := maptool.DistributeMap(s.cfg.Size, s.field)
-	if len(distr[s.freeID]) > 0 {
-		loc = distr[s.freeID][0].Location
-	} else if len(distr[s.foodID]) > 0 {
-		loc = distr[s.foodID][0].Location
-	} else {
+	loc, ok := s.fmap.AnyRandom(s.freeID, s.foodID)
+	if !ok {
 		// no place
 		return
 	}
@@ -102,9 +96,9 @@ func (s *StdServer) Join(base *servtool.PlayerBase, message proto.JoinMessage) {
 	base.Stock = minPlayerLength - 1
 	base.Controller = servtool.NewController()
 
-	s.field[loc.X][loc.Y] = domain.Cell{
+	s.fmap.Set(loc, domain.Cell{
 		ID: base.ObjectID,
-	}
+	})
 }
 
 func (s *StdServer) Leave(base *servtool.PlayerBase, message proto.LeaveMessage) {
@@ -116,9 +110,8 @@ func (s *StdServer) Leave(base *servtool.PlayerBase, message proto.LeaveMessage)
 		return
 	}
 
-	distr := maptool.DistributeMap(s.cfg.Size, s.field)
-	for _, ptr := range distr[base.ObjectID] {
-		*ptr.Cell = domain.Cell{ID: s.freeID}
+	for _, loc := range base.Cells {
+		s.fmap.Set(loc, domain.Cell{ID: s.freeID})
 	}
 
 	s.ids.Remove(base.ObjectID)
@@ -169,9 +162,9 @@ func (s *StdServer) tick() {
 
 	s.placeFood()
 
-	s.auto.MakeUpdate(servtool.StateUpdate{
-		NewMap: s.field,
-		NewIDs: s.ids.All(),
+	s.auto.MakeUpdate(&servtool.StateUpdate{
+		FastMapUpdate: s.fmap.PurgeFastUpdate(),
+		FastIDsUpdate: s.ids.PurgeFastUpdate(),
 	})
 }
 
@@ -180,7 +173,7 @@ func (s *StdServer) moveHead(p *servtool.PlayerBase) {
 
 	head := p.Cells[p.Length()-1]
 	nxt := s.cfg.Size.Move(head, dir)
-	cell := &s.field[nxt.X][nxt.Y]
+	cell := s.fmap.Get(nxt)
 
 	if cell.ID == s.foodID {
 		p.Stock += cell.Food
@@ -189,9 +182,9 @@ func (s *StdServer) moveHead(p *servtool.PlayerBase) {
 		return
 	}
 
-	*cell = domain.Cell{
+	s.fmap.Set(nxt, domain.Cell{
 		ID: p.ObjectID,
-	}
+	})
 	p.Cells = append(p.Cells, nxt)
 }
 
@@ -208,9 +201,7 @@ func (s *StdServer) moveTail(p *servtool.PlayerBase) {
 	tail := p.Cells[0]
 	p.Cells = p.Cells[1:]
 
-	s.field[tail.X][tail.Y] = domain.Cell{
-		ID: s.freeID,
-	}
+	s.fmap.Set(tail, domain.Cell{ID: s.freeID})
 }
 
 func (s *StdServer) playersByLength() []*servtool.PlayerBase {
@@ -231,16 +222,15 @@ func (s *StdServer) playersByLength() []*servtool.PlayerBase {
 }
 
 func (s *StdServer) placeFood() {
-	distr := maptool.DistributeMap(s.cfg.Size, s.field)
-	for i := 0; i < len(distr[s.freeID]); i++ {
-		if len(distr[s.foodID])+i+1 > s.cfg.FoodCells {
-			break
+	for s.fmap.Count(s.foodID) < s.cfg.FoodCells {
+		loc, ok := s.fmap.AnyRandom(s.freeID)
+		if !ok {
+			return
 		}
 
-		ptr := distr[s.freeID][i]
-		*ptr.Cell = domain.Cell{
+		s.fmap.Set(loc, domain.Cell{
 			ID:   s.foodID,
 			Food: rand.Intn(9) + 1, //nolint:gomnd,gosec
-		}
+		})
 	}
 }

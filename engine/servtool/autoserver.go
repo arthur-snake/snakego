@@ -42,7 +42,7 @@ func (s *AutoServer) TickLock(f func()) {
 	f()
 }
 
-func (s *AutoServer) MakeUpdate(upd StateUpdate) {
+func (s *AutoServer) MakeUpdate(upd *StateUpdate) {
 	s.TickLock(func() {
 		s.connected.BroadcastUpdate(s.state.Update(upd))
 	})

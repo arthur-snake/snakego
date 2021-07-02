@@ -7,6 +7,8 @@ import (
 
 type IDs struct {
 	ids map[domain.ObjectID]proto.UpdateID
+
+	updates []proto.UpdateID
 }
 
 func NewIDs() *IDs {
@@ -39,6 +41,7 @@ func (p *IDs) Remove(id domain.ObjectID) {
 
 func (p *IDs) put(id proto.UpdateID) {
 	p.ids[id.ID] = id
+	p.updates = append(p.updates, id)
 }
 
 func (p *IDs) Add(upd proto.UpdateID) proto.UpdateID {
@@ -61,4 +64,11 @@ func (p *IDs) All() []proto.UpdateID {
 		ids = append(ids, obj)
 	}
 	return ids
+}
+
+func (p *IDs) PurgeFastUpdate() []proto.UpdateID {
+	res := p.updates
+	p.updates = nil
+
+	return res
 }

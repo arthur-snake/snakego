@@ -8,6 +8,7 @@ import (
 
 type Distribution map[domain.ObjectID][]domain.CellWithLocation
 
+// DistributeMap returns map from id to shuffled cells. Considered slow.
 func DistributeMap(size domain.FieldSize, f [][]domain.Cell) Distribution {
 	distr := make(Distribution)
 	IterateCustom(size, domain.Pair{}, func(loc domain.Pair) {

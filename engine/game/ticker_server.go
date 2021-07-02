@@ -26,12 +26,11 @@ type TickerServer struct {
 	auto *servtool.AutoServer
 }
 
-//nolint:dupl
 func NewTickerServer(cfg Config) (*TickerServer, *servtool.AutoServer) {
 	ids, free, _, block := servtool.NewBasicIDs()
 
 	field := maptool.CreateMap(cfg.Size, domain.Cell{ID: free.ID})
-	state := servtool.NewState(cfg.Size, servtool.StateUpdate{
+	state := servtool.NewState(cfg.Size, &servtool.StateUpdate{
 		NewMap: field,
 		NewIDs: ids.All(),
 	})
@@ -96,7 +95,7 @@ func (s *TickerServer) tick() {
 		}
 	}
 
-	s.auto.MakeUpdate(servtool.StateUpdate{
+	s.auto.MakeUpdate(&servtool.StateUpdate{
 		NewMap: s.field,
 		NewIDs: s.ids.All(),
 	})
