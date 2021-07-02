@@ -27,6 +27,8 @@ type StdServer struct {
 
 	freeID domain.ObjectID
 	foodID domain.ObjectID
+
+	useTicker bool
 }
 
 func NewStdServer(cfg Config) (*StdServer, *servtool.AutoServer) {
@@ -39,11 +41,12 @@ func NewStdServer(cfg Config) (*StdServer, *servtool.AutoServer) {
 	})
 
 	srv := &StdServer{
-		cfg:    cfg,
-		fmap:   fmap,
-		ids:    ids,
-		freeID: free.ID,
-		foodID: food.ID,
+		cfg:       cfg,
+		fmap:      fmap,
+		ids:       ids,
+		freeID:    free.ID,
+		foodID:    food.ID,
+		useTicker: true,
 	}
 
 	auto := servtool.NewAutoServer(srv, state)
@@ -140,13 +143,22 @@ func (s *StdServer) Chat(base *servtool.PlayerBase, message proto.ChatMessage) {
 // Server methods
 
 func (s *StdServer) Run() {
-	ticker := time.NewTicker(s.cfg.TickTime)
-	for range ticker.C {
-		s.tick()
+	time.Sleep(time.Duration(rand.Intn(int(s.cfg.TickTime))))
+
+	if s.useTicker {
+		ticker := time.NewTicker(s.cfg.TickTime)
+		for range ticker.C {
+			s.Tick()
+		}
+	} else {
+		for {
+			s.Tick()
+			time.Sleep(s.cfg.TickTime)
+		}
 	}
 }
 
-func (s *StdServer) tick() {
+func (s *StdServer) Tick() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 

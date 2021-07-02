@@ -2,11 +2,10 @@ package main
 
 import (
 	"embed"
+	"github.com/arthur-snake/snakego/pkg/domain"
 	"io/fs"
 	"net/http"
 	"time"
-
-	"github.com/arthur-snake/snakego/pkg/domain"
 
 	"github.com/arthur-snake/snakego/engine/game"
 	"github.com/arthur-snake/snakego/pkg/handlers"
@@ -52,7 +51,7 @@ func main() {
 
 	def := game.Config{
 		Size:      domain.FieldSize{SizeX: cfg.SizeX, SizeY: cfg.SizeY},
-		TickTime:  time.Millisecond * time.Duration(cfg.TickTime),
+		TickTime:  cfg.TickTime,
 		FoodCells: cfg.FoodCount,
 	}
 
@@ -67,7 +66,7 @@ func main() {
 
 	srv3, auto3 := game.NewStdServer(game.Config{
 		Size:      domain.FieldSize{SizeX: 75, SizeY: 40},
-		TickTime:  80,
+		TickTime:  time.Millisecond * 80,
 		FoodCells: 3,
 	})
 	go srv3.Run()
@@ -75,7 +74,7 @@ func main() {
 
 	srv4, auto4 := game.NewStdServer(game.Config{
 		Size:      domain.FieldSize{SizeX: 75, SizeY: 40},
-		TickTime:  100,
+		TickTime:  time.Millisecond * 100,
 		FoodCells: 2,
 	})
 	go srv4.Run()
@@ -83,7 +82,7 @@ func main() {
 
 	srv5, auto5 := game.NewStdServer(game.Config{
 		Size:      domain.FieldSize{SizeX: 20, SizeY: 10},
-		TickTime:  80,
+		TickTime:  time.Millisecond * 80,
 		FoodCells: 1,
 	})
 	go srv5.Run()
