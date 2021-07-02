@@ -4,6 +4,9 @@ import (
 	"embed"
 	"io/fs"
 	"net/http"
+	"time"
+
+	"github.com/arthur-snake/snakego/pkg/domain"
 
 	"github.com/arthur-snake/snakego/engine/game"
 	"github.com/arthur-snake/snakego/pkg/handlers"
@@ -47,14 +50,44 @@ func main() {
 
 	servers := lookup.NewMany()
 
-	srv1, auto1 := game.NewStdServer(game.DefaultGame)
+	def := game.Config{
+		Size:      domain.FieldSize{SizeX: cfg.SizeX, SizeY: cfg.SizeY},
+		TickTime:  time.Millisecond * time.Duration(cfg.TickTime),
+		FoodCells: cfg.FoodCount,
+	}
+
+	srv1, auto1 := game.NewStdServer(def)
 	go srv1.Run()
 	servers.Add("std", auto1)
 	servers.Add("", auto1)
 
-	srv2, auto2 := game.NewTickerServer(game.DefaultGame)
+	srv2, auto2 := game.NewTickerServer(def)
 	go srv2.Run()
 	servers.Add("tick", auto2)
+
+	srv3, auto3 := game.NewStdServer(game.Config{
+		Size:      domain.FieldSize{SizeX: 75, SizeY: 40},
+		TickTime:  80,
+		FoodCells: 3,
+	})
+	go srv3.Run()
+	servers.Add("faster", auto3)
+
+	srv4, auto4 := game.NewStdServer(game.Config{
+		Size:      domain.FieldSize{SizeX: 75, SizeY: 40},
+		TickTime:  100,
+		FoodCells: 2,
+	})
+	go srv4.Run()
+	servers.Add("slower", auto4)
+
+	srv5, auto5 := game.NewStdServer(game.Config{
+		Size:      domain.FieldSize{SizeX: 20, SizeY: 10},
+		TickTime:  80,
+		FoodCells: 1,
+	})
+	go srv5.Run()
+	servers.Add("small", auto5)
 
 	wsHandler := ws.NewHandler(servers)
 

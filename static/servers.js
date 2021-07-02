@@ -27,7 +27,6 @@ function Servers() {
 
             if (!!newList) {
                 list = newList;
-                console.log(list);
 
                 if (initDropdown) {
                     initDropdown();

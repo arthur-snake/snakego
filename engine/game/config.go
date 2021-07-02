@@ -15,9 +15,3 @@ type Config struct {
 	//  - name
 	//  - fillers []string
 }
-
-var DefaultGame = Config{
-	Size:      domain.FieldSize{SizeX: 60, SizeY: 30},
-	TickTime:  time.Millisecond * 100,
-	FoodCells: 4,
-}
