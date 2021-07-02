@@ -1,6 +1,9 @@
 package maptool
 
-import "github.com/arthur-snake/snakego/pkg/domain"
+import (
+	"github.com/arthur-snake/snakego/pkg/domain"
+	"math/rand"
+)
 
 type Distribution map[domain.ObjectID][]domain.CellWithLocation
 
@@ -12,7 +15,15 @@ func DistributeMap(size domain.FieldSize, f [][]domain.Cell) Distribution {
 			Location: loc,
 			Cell:     ptr,
 		})
+		shuffleTail(distr[ptr.ID])
 	})
 
 	return distr
+}
+
+func shuffleTail(arr []domain.CellWithLocation) {
+	n := len(arr)
+	i := rand.Intn(n) //nolint:gosec
+
+	arr[i], arr[n-1] = arr[n-1], arr[i]
 }

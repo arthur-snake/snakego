@@ -17,7 +17,7 @@ type Config struct {
 }
 
 var DefaultGame = Config{
-	Size:      domain.FieldSize{SizeX: 30, SizeY: 15},
-	TickTime:  time.Millisecond * 200,
+	Size:      domain.FieldSize{SizeX: 60, SizeY: 30},
+	TickTime:  time.Millisecond * 100,
 	FoodCells: 4,
 }
