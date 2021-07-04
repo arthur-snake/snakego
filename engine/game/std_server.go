@@ -143,7 +143,7 @@ func (s *StdServer) Chat(base *servtool.PlayerBase, message proto.ChatMessage) {
 // Server methods
 
 func (s *StdServer) Run() {
-	time.Sleep(time.Duration(rand.Intn(int(s.cfg.TickTime))))
+	time.Sleep(time.Duration(rand.Intn(int(s.cfg.TickTime)))) //nolint:gosec
 
 	if s.useTicker {
 		ticker := time.NewTicker(s.cfg.TickTime)

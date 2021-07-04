@@ -2,10 +2,11 @@ package main
 
 import (
 	"embed"
-	"github.com/arthur-snake/snakego/pkg/domain"
 	"io/fs"
 	"net/http"
 	"time"
+
+	"github.com/arthur-snake/snakego/pkg/domain"
 
 	"github.com/arthur-snake/snakego/engine/game"
 	"github.com/arthur-snake/snakego/pkg/handlers"
