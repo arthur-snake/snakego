@@ -198,6 +198,7 @@ func (s *StdServer) moveHead(p *servtool.PlayerBase) {
 		ID: p.ObjectID,
 	})
 	p.Cells = append(p.Cells, nxt)
+	p.Controller.PostMove()
 }
 
 func (s *StdServer) moveTail(p *servtool.PlayerBase) {

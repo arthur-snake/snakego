@@ -105,7 +105,7 @@ func (s *AutoServer) Turn(player proto.Player, message proto.TurnMessage) {
 		WithField("uid", player.UID()).
 		WithField("nick", base.Nick).
 		WithField("turn", message.Direction.Name).
-		Debug("user turn")
+		Trace("user turn")
 
 	s.impl.Turn(base, message)
 }
