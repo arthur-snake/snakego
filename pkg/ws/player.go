@@ -88,7 +88,7 @@ func (p *Player) handleMessage(m map[string]string) {
 		}
 	}()
 
-	log.WithField("msg", m).Info("got message from player")
+	log.WithField("msg", m).Trace("got message from player")
 
 	switch m["act"] {
 	case "join":
