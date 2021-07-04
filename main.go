@@ -51,9 +51,9 @@ func main() {
 	servers := lookup.NewMany()
 
 	def := game.Config{
-		Size:      domain.FieldSize{SizeX: cfg.SizeX, SizeY: cfg.SizeY},
-		TickTime:  cfg.TickTime,
-		FoodCells: cfg.FoodCount,
+		Size:      domain.FieldSize{SizeX: cfg.DefaultServer.SizeX, SizeY: cfg.DefaultServer.SizeY},
+		TickTime:  cfg.DefaultServer.TickTime,
+		FoodCells: cfg.DefaultServer.FoodCount,
 	}
 
 	srv1, auto1 := game.NewStdServer(def)
