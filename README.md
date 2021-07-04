@@ -1,6 +1,17 @@
 # snakego
 
-## To develop
+## Usage
+
+Run your own server with command:
+
+```bash
+docker run -d -p 8080:8080 --name snake ghcr.io/arthur-snake/snakego:latest
+```
+
+Then open http://localhost:8080/ in the browser.
+
+<details>
+<summary>Development</summary>
 
 Make sure you have:
 - Go 1.16, [install](https://golang.org/doc/install)
@@ -17,3 +28,4 @@ To use it:
 - Select EnvFile tab
 - Add file .env from repo root
   * On macOS press shirt+cmd+. to display hidden files
+</details>
